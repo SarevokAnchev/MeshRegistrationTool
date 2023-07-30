@@ -49,6 +49,7 @@ MainWindow::MainWindow(QWidget* parent)
     main_layout->addWidget(save_button);
 
     this->setLayout(main_layout);
+    this->setFixedSize(350, 150);
 
     connect(fixed_button, &QPushButton::clicked, this, &MainWindow::choose_fixed_file);
     connect(moving_button, &QPushButton::clicked, this, &MainWindow::choose_moving_file);
