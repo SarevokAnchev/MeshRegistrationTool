@@ -6,6 +6,8 @@
 
 #include <filesystem>
 #include <exception>
+#include <fstream>
+#include <iostream>
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -15,10 +17,14 @@
 #include <vtkSTLReader.h>
 #include <vtkNIFTIImageReader.h>
 
+#include <nlohmann/json.hpp>
+
 #include "../utils/image.h"
 #include "../utils/mesh.h"
 #include "../registration/ICP.h"
 #include "../registration/MeshRegistrationDisplay.h"
+
+using json = nlohmann::json;
 
 MainWindow::MainWindow(QWidget* parent)
 {
@@ -55,6 +61,7 @@ MainWindow::MainWindow(QWidget* parent)
     connect(moving_button, &QPushButton::clicked, this, &MainWindow::choose_moving_file);
     connect(auto_button, &QPushButton::clicked, this, &MainWindow::auto_registration);
     connect(manual_button, &QPushButton::clicked, this, &MainWindow::manual_registration);
+    connect(save_button, &QPushButton::clicked, this, &MainWindow::save_transform);
 }
 
 vtkSmartPointer<vtkPolyData> MainWindow::read_mesh_file(const std::filesystem::path& path)
@@ -168,4 +175,28 @@ void MainWindow::manual_registration()
     reg_display.set_transform(registration.get_transform());
     reg_display.run();
     registration.set_transform(reg_display.get_transform());
+}
+
+void MainWindow::save_transform()
+{
+    auto file = QFileDialog::getSaveFileName(this, "Save transform", "", "JSON File (*.json)");
+    if (file.isEmpty()) return;
+    json j;
+    j["fixed"] = fixed_label->text().toStdString();
+    j["moving"] = moving_label->text().toStdString();
+    auto tfm = registration.get_transform();
+    std::vector<double> tfm_values;
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            tfm_values.emplace_back(tfm(i, j));
+        }
+    }
+    j["matrix"] = tfm_values;
+    try {
+        std::ofstream o(file.toStdString());
+        o << j.dump(4);
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Unable to save transform: " << e.what() << std::endl;
+    }
 }

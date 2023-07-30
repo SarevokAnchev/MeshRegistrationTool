@@ -43,4 +43,6 @@ public slots:
 
     void auto_registration();
     void manual_registration();
+
+    void save_transform();
 };

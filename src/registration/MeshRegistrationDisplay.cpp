@@ -248,7 +248,6 @@ void MeshRegistrationDisplay::change_opacity(OPACITY_COMMAND c)
 
 void MeshRegistrationDisplay::scaling(const std::string & code)
 {
-    std::cout << "scaling " << code << std::endl;
     auto vtk_trans = vtkSmartPointer<vtkTransform>::New();
     auto init_matrix = vtkSmartPointer<vtkMatrix4x4>::New();
     for (int r = 0; r < transform.rows(); r++) {

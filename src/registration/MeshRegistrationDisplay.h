@@ -18,7 +18,6 @@ enum class OPACITY_COMMAND {
 };
 
 class MeshRegistrationDisplay {
-    // TODO : option de reset de la transformation
 private:
     vtkSmartPointer<vtkPolyData> fixed;
     vtkSmartPointer<vtkPolyData> moving;
