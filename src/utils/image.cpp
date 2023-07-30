@@ -27,8 +27,7 @@ bool is_nii_image(const std::string& path)
 
     auto extension = f.extension().string();
     if (extension == ".nii"
-    || extension == ".gz" && f.stem().extension().string() == ".nii"
-    || extension == ".nrrd")
+    || extension == ".gz" && f.stem().extension().string() == ".nii")
         return true;
     return false;
 }

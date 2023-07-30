@@ -13,6 +13,7 @@
 
 #include <vtkPolyDataReader.h>
 #include <vtkSTLReader.h>
+#include <vtkNIFTIImageReader.h>
 
 #include "../utils/image.h"
 #include "../utils/mesh.h"
@@ -58,9 +59,14 @@ MainWindow::MainWindow(QWidget* parent)
 vtkSmartPointer<vtkPolyData> MainWindow::read_mesh_file(const std::filesystem::path& path)
 {
     if (is_nii_image(path)) {
-        auto mask = read_nii<itk::Image<char, 3>>(path.string());
-        auto vtk_image = itk_to_vtk_image<itk::Image<char, 3>>(mask);
-        return marching_cubes(vtk_image);
+        auto reader = vtkSmartPointer<vtkNIFTIImageReader>::New();
+        reader->SetFileName(path.c_str());
+        reader->Update();
+        auto mesh = marching_cubes(reader->GetOutput());
+        if (mesh->GetNumberOfPoints() > 5000) {
+            mesh = simplify_mesh(mesh, (float)(1 - 5000/(float)mesh->GetNumberOfPoints()));
+        }
+        return mesh;
     }
     else {
         auto extension = path.extension().string();

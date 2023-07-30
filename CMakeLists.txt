@@ -20,9 +20,6 @@ find_package(Qt6 COMPONENTS Widgets REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(VTK REQUIRED)
-find_package(ITK REQUIRED)
-
-include(${ITK_USE_FILE})
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
@@ -30,7 +27,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_BINARY_DIR})
 
 target_link_libraries(${PROJECT_NAME}
         ${VTK_LIBRARIES}
-        ${ITK_LIBRARIES}
         Qt6::Widgets
         nlohmann_json::nlohmann_json
         Eigen3::Eigen)
