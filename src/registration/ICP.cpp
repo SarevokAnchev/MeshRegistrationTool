@@ -129,7 +129,9 @@ ICP::TransformMatrixType icp_registration(ICP::PointCloudType fixed, ICP::PointC
 {
     ICP icp(std::move(fixed), std::move(moving));
     icp.set_icp_params(params);
-    icp.add_callback([](ICPStatus s){ std::cout << s.iteration << " - " << s.error << std::endl; });
+    std::cout << "Initializing ICP:" << std::endl << icp.get_transform() << std::endl;
+    // icp.add_callback([](ICPStatus s){ std::cout << s.iteration << " - " << s.error << std::endl; });
     icp.run();
+    std::cout << "Registration finished :" << std::endl << icp.get_transform() << std::endl;
     return icp.get_transform();
 }
