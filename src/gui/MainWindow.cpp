@@ -51,8 +51,12 @@ MainWindow::MainWindow(QWidget* parent)
     reg_layout->addWidget(manual_button);
     main_layout->addLayout(reg_layout);
 
+    auto tfm_layout = new QHBoxLayout();
+    load_button = new QPushButton("Load Tfm");
+    tfm_layout->addWidget(load_button);
     save_button = new QPushButton("Save Transform");
-    main_layout->addWidget(save_button);
+    tfm_layout->addWidget(save_button);
+    main_layout->addLayout(tfm_layout);
 
     this->setLayout(main_layout);
     this->setFixedSize(350, 150);
@@ -61,6 +65,7 @@ MainWindow::MainWindow(QWidget* parent)
     connect(moving_button, &QPushButton::clicked, this, &MainWindow::choose_moving_file);
     connect(auto_button, &QPushButton::clicked, this, &MainWindow::auto_registration);
     connect(manual_button, &QPushButton::clicked, this, &MainWindow::manual_registration);
+    connect(load_button, &QPushButton::clicked, this, &MainWindow::load_transform);
     connect(save_button, &QPushButton::clicked, this, &MainWindow::save_transform);
 }
 
@@ -175,6 +180,30 @@ void MainWindow::manual_registration()
     reg_display.set_transform(registration.get_transform());
     reg_display.run();
     registration.set_transform(reg_display.get_transform());
+}
+
+void MainWindow::load_transform()
+{
+    auto file = QFileDialog::getOpenFileName(
+            this, "Transform file", "", "JSON File (*.json)");
+    if (file.isEmpty()) return;
+    json ds;
+    try {
+        std::ifstream s(file.toStdString());
+        s >> ds;
+        s.close();
+        auto values = ds.at("matrix").get<std::vector<double>>();
+        Eigen::Matrix4d matrix;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                matrix(i, j) = values[i*4 + j];
+            }
+        }
+        registration.set_transform(matrix);
+    }
+    catch (const std::exception& e) {
+        std::cout << "Unable to read transform: " << e.what() << std::endl;
+    }
 }
 
 void MainWindow::save_transform()

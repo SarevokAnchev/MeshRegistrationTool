@@ -31,6 +31,7 @@ private:
 
     QPushButton* auto_button;
     QPushButton* manual_button;
+    QPushButton* load_button;
     QPushButton* save_button;
 
 public:
@@ -44,5 +45,6 @@ public slots:
     void auto_registration();
     void manual_registration();
 
+    void load_transform();
     void save_transform();
 };
