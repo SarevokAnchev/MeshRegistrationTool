@@ -1,5 +1,7 @@
 #pragma once
 
+#include <filesystem>
+
 #include <vtkSmartPointer.h>
 #include <vtkPolyData.h>
 #include <vtkFloatArray.h>
@@ -23,3 +25,5 @@ vtkSmartPointer<vtkPolyData> create_mesh(const std::vector<std::tuple<float, flo
 void center_of_mass(const vtkSmartPointer<vtkPolyData>&, double*);
 
 std::vector<double> mesh_bbox(const vtkSmartPointer<vtkPolyData>&);
+
+void save_mesh(const vtkSmartPointer<vtkPolyData>& mesh, const std::filesystem::path& path);

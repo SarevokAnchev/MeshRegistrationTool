@@ -7,6 +7,7 @@
 #include "vtkCenterOfMass.h"
 #include "vtkIdTypeArray.h"
 #include "vtkPointData.h"
+#include "vtkPolyDataWriter.h"
 
 float nodes_distance(const std::tuple<float, float, float>& a, const std::tuple<float, float, float>& b)
 {
@@ -141,4 +142,13 @@ std::vector<double> mesh_bbox(const vtkSmartPointer<vtkPolyData>& mesh)
         min_y, max_y,
         min_z, max_z
     };
+}
+
+void save_mesh(const vtkSmartPointer<vtkPolyData>& mesh, const std::filesystem::path& path)
+{
+    auto writer = vtkSmartPointer<vtkPolyDataWriter>::New();
+    writer->SetInputData(mesh);
+    writer->SetFileTypeToASCII();
+    writer->SetFileName(path.string().c_str());
+    writer->Update();
 }

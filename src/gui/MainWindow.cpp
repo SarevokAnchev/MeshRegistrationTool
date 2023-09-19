@@ -27,6 +27,7 @@
 using json = nlohmann::json;
 
 MainWindow::MainWindow(QWidget* parent)
+    : QWidget(parent)
 {
     auto main_layout = new QVBoxLayout();
 
@@ -35,6 +36,8 @@ MainWindow::MainWindow(QWidget* parent)
     fixed_layout->addWidget(fixed_label);
     fixed_button = new QPushButton("File..");
     fixed_layout->addWidget(fixed_button);
+    save_fixed_button = new QPushButton("Save");
+    fixed_layout->addWidget(save_fixed_button);
     main_layout->addLayout(fixed_layout);
 
     auto moving_layout = new QHBoxLayout();
@@ -42,6 +45,8 @@ MainWindow::MainWindow(QWidget* parent)
     moving_layout->addWidget(moving_label);
     moving_button = new QPushButton("File..");
     moving_layout->addWidget(moving_button);
+    save_moving_button = new QPushButton("Save");
+    moving_layout->addWidget(save_moving_button);
     main_layout->addLayout(moving_layout);
 
     auto reg_layout = new QHBoxLayout();
@@ -62,7 +67,9 @@ MainWindow::MainWindow(QWidget* parent)
     this->setFixedSize(350, 150);
 
     connect(fixed_button, &QPushButton::clicked, this, &MainWindow::choose_fixed_file);
+    connect(save_fixed_button, &QPushButton::clicked, this, &MainWindow::save_fixed_mesh);
     connect(moving_button, &QPushButton::clicked, this, &MainWindow::choose_moving_file);
+    connect(save_moving_button, &QPushButton::clicked, this, &MainWindow::save_moving_mesh);
     connect(auto_button, &QPushButton::clicked, this, &MainWindow::auto_registration);
     connect(manual_button, &QPushButton::clicked, this, &MainWindow::manual_registration);
     connect(load_button, &QPushButton::clicked, this, &MainWindow::load_transform);
@@ -230,4 +237,26 @@ void MainWindow::save_transform()
     catch (const std::exception& e) {
         std::cerr << "Unable to save transform: " << e.what() << std::endl;
     }
+}
+
+void MainWindow::save_fixed_mesh()
+{
+    auto fixed_mesh = registration.get_fixed();
+    if (!fixed_mesh) {
+        std::cerr << "No fixed mesh to be saved !" << std::endl;
+        return;
+    }
+    auto file = QFileDialog::getSaveFileName(this, "Save fixed mesh", "", "VTK File (*.vtk)");
+    save_mesh(fixed_mesh, std::filesystem::path(file.toStdString()));
+}
+
+void MainWindow::save_moving_mesh()
+{
+    auto moving_mesh = registration.get_moving();
+    if (!moving_mesh) {
+        std::cerr << "No moving mesh to be saved !" << std::endl;
+        return;
+    }
+    auto file = QFileDialog::getSaveFileName(this, "Save moving mesh", "", "VTK File (*.vtk)");
+    save_mesh(moving_mesh, std::filesystem::path(file.toStdString()));
 }
