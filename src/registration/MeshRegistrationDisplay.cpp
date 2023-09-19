@@ -4,6 +4,8 @@
 
 #include "MeshRegistrationDisplay.h"
 
+#include <iostream>
+
 #include <vtkPolyDataMapper.h>
 #include <vtkProperty.h>
 #include <vtkInteractorStyleTrackballCamera.h>
@@ -67,6 +69,12 @@ void MeshRegistrationDisplay::run()
     interactor->AddObserver(vtkCommand::KeyPressEvent, move_callback);
     renwin->Render();
     interactor->Start();
+
+    std::cout << "Mesh Registration Display:" << std::endl;
+    std::cout << "Arrow keys: Translations" << std::endl;
+    std::cout << "PageUp / PageDown: Rotations" << std::endl;
+    std::cout << "A / Z: Scaling" << std::endl;
+    std::cout << "F / D and V / C: fixed and moving mesh opacity" << std::endl;
 }
 
 vtkSmartPointer<vtkPolyData> MeshRegistrationDisplay::apply_transform(vtkSmartPointer<vtkPolyData> mesh)
