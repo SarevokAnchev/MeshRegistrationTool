@@ -71,14 +71,16 @@ MainWindow::MainWindow(QWidget* parent)
 
 vtkSmartPointer<vtkPolyData> MainWindow::read_mesh_file(const std::filesystem::path& path)
 {
-    if (is_nii_image(path)) {
+    if (is_nii_image(path.string())) {
+        std::cout << "Image file detected, performing Marching Cubes..." << std::endl;
         auto reader = vtkSmartPointer<vtkNIFTIImageReader>::New();
-        reader->SetFileName(path.c_str());
+        reader->SetFileName(path.string().c_str());
         reader->Update();
         auto mesh = marching_cubes(reader->GetOutput());
         if (mesh->GetNumberOfPoints() > 5000) {
             mesh = simplify_mesh(mesh, (float)(1 - 5000/(float)mesh->GetNumberOfPoints()));
         }
+        std::cout << "Done !" << std:: endl;
         return mesh;
     }
     else {
