@@ -116,7 +116,7 @@ vtkSmartPointer<vtkPolyData> MainWindow::read_mesh_file(const std::filesystem::p
 void MainWindow::choose_fixed_file()
 {
     auto file = QFileDialog::getOpenFileName(
-            this, "Mesh file selection", QString(),
+            this, "Fixed file selection", QString(),
             "VTK File (*.vtk);;STL File (*.stl);;NIFTI Image File (*.nii *.nii.gz)");
     auto path = std::filesystem::path(file.toStdString());
     try {
@@ -133,7 +133,7 @@ void MainWindow::choose_fixed_file()
 void MainWindow::choose_moving_file()
 {
     auto file = QFileDialog::getOpenFileName(
-            this, "Mesh file selection", QString(),
+            this, "Moving file selection", QString(),
             "VTK File (*.vtk);;STL File (*.stl);;NIFTI Image File (*.nii *.nii.gz)");
     auto path = std::filesystem::path(file.toStdString());
     try {
