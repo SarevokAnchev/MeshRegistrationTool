@@ -59,8 +59,10 @@ MainWindow::MainWindow(QWidget* parent)
     auto tfm_layout = new QHBoxLayout();
     load_button = new QPushButton("Load Tfm");
     tfm_layout->addWidget(load_button);
-    save_button = new QPushButton("Save Transform");
+    save_button = new QPushButton("Save Tfm");
     tfm_layout->addWidget(save_button);
+    save_mesh_button = new QPushButton("Save Mesh");
+    tfm_layout->addWidget(save_mesh_button);
     main_layout->addLayout(tfm_layout);
 
     this->setLayout(main_layout);
@@ -74,6 +76,7 @@ MainWindow::MainWindow(QWidget* parent)
     connect(manual_button, &QPushButton::clicked, this, &MainWindow::manual_registration);
     connect(load_button, &QPushButton::clicked, this, &MainWindow::load_transform);
     connect(save_button, &QPushButton::clicked, this, &MainWindow::save_transform);
+    connect(save_mesh_button, &QPushButton::clicked, this, &MainWindow::save_moved_mesh);
 }
 
 vtkSmartPointer<vtkPolyData> MainWindow::read_mesh_file(const std::filesystem::path& path)
@@ -113,7 +116,8 @@ vtkSmartPointer<vtkPolyData> MainWindow::read_mesh_file(const std::filesystem::p
 void MainWindow::choose_fixed_file()
 {
     auto file = QFileDialog::getOpenFileName(
-            this, "Mesh file selection");
+            this, "Mesh file selection", QString(),
+            "VTK File (*.vtk);;STL File (*.stl);;NIFTI Image File (*.nii *.nii.gz)");
     auto path = std::filesystem::path(file.toStdString());
     try {
         registration.set_fixed(read_mesh_file(path));
@@ -129,7 +133,8 @@ void MainWindow::choose_fixed_file()
 void MainWindow::choose_moving_file()
 {
     auto file = QFileDialog::getOpenFileName(
-            this, "Mesh file selection");
+            this, "Mesh file selection", QString(),
+            "VTK File (*.vtk);;STL File (*.stl);;NIFTI Image File (*.nii *.nii.gz)");
     auto path = std::filesystem::path(file.toStdString());
     try {
         registration.set_moving(read_mesh_file(path));
@@ -257,6 +262,18 @@ void MainWindow::save_moving_mesh()
         std::cerr << "No moving mesh to be saved !" << std::endl;
         return;
     }
+    auto file = QFileDialog::getSaveFileName(this, "Save moving mesh", "", "VTK File (*.vtk)");
+    save_mesh(moving_mesh, std::filesystem::path(file.toStdString()));
+}
+
+void MainWindow::save_moved_mesh()
+{
+    auto moving_mesh = registration.get_moving();
+    if (!moving_mesh) {
+        std::cerr << "No moving mesh to be saved !" << std::endl;
+        return;
+    }
+    moving_mesh = registration.apply(moving_mesh);
     auto file = QFileDialog::getSaveFileName(this, "Save moving mesh", "", "VTK File (*.vtk)");
     save_mesh(moving_mesh, std::filesystem::path(file.toStdString()));
 }

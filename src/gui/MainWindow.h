@@ -35,6 +35,7 @@ private:
     QPushButton* manual_button;
     QPushButton* load_button;
     QPushButton* save_button;
+    QPushButton* save_mesh_button;
 
 public:
     explicit MainWindow(QWidget* parent=nullptr);
@@ -51,4 +52,5 @@ public slots:
 
     void load_transform();
     void save_transform();
+    void save_moved_mesh();
 };
